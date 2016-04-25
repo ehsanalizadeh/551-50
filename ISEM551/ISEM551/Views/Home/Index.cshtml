@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="jumbotron">
+    <h1>JQuery</h1>
+    </div>
+
+    <div id="accordion">
+        <h3>sortable</h3>
+        <div>
+            <p>
+                you can drag and sort items as you wish:
+            </p>
+            <ul id="sortable">
+                <li class="ui-state-default">Item 1</li>
+                <li class="ui-state-default">Item 2</li>
+                <li class="ui-state-default">Item 3</li>
+                <li class="ui-state-default">Item 4</li>
+                <li class="ui-state-default">Item 5</li>
+            </ul>
+        </div>
+        <h3>selectable</h3>
+        <div>
+            <p>
+                you can select multiple of the following with holding CTRL key:
+            </p>
+            <ul id="selectable">
+                <li class="ui-widget-content">Item 1</li>
+                <li class="ui-widget-content">Item 2</li>
+                <li class="ui-widget-content">Item 3</li>
+                <li class="ui-widget-content">Item 4</li>
+                <li class="ui-widget-content">Item 5</li>
+                <li class="ui-widget-content">Item 6</li>
+                <li class="ui-widget-content">Item 7</li>
+            </ul>
+        </div>
+        <h3>Toggle</h3>
+        <div class="toggler">
+            <div id="effect" class="ui-widget-content ui-corner-all">
+                <h3 class="ui-widget-header ui-corner-all">Toggle</h3>
+                <p>
+                    appear and disappear by the choosen effect.
+                </p>
+            </div>
+            <select name="effects" id="effectTypes">
+                <option value="blind">Blind</option>
+                <option value="bounce">Bounce</option>
+                <option value="clip">Clip</option>
+                <option value="drop">Drop</option>
+                <option value="explode">Explode</option>
+                <option value="fold">Fold</option>
+                <option value="highlight">Highlight</option>
+                <option value="puff">Puff</option>
+                <option value="pulsate">Pulsate</option>
+                <option value="scale">Scale</option>
+                <option value="shake">Shake</option>
+                <option value="size">Size</option>
+                <option value="slide">Slide</option>
+            </select>
+            <button id="button" class="ui-state-default ui-corner-all">Run Effect</button>
+        </div>
+
+
+        <h3>Map</h3>
+        <div style="height:260px;">
+            <label for="lat">Latitude  </label>
+            <input id="lat" name="lat" value="40.263052">
+            <br>
+            <label for="lng">Longitude</label>
+            <input id="lng" name="lng" value="-76.880705">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    @section Scripts {
+
+        <script>
+            $(function () {
+                $("#accordion").accordion();
+                $("#sortable").sortable({
+                    revert: true
+                });
+                $("#selectable").selectable();
+                $("#draggable").draggable({
+                    connectToSortable: "#sortable",
+                    helper: "clone",
+                    revert: "invalid"
+                });
+                $("ul, li").disableSelection();
+                function runEffect() {
+                    // get effect type from
+                    var selectedEffect = $("#effectTypes").val();
+
+                    // most effect types need no options passed by default
+                    var options = {};
+                    // some effects have required parameters
+                    if (selectedEffect === "scale") {
+                        options = { percent: 0 };
+                    } else if (selectedEffect === "size") {
+                        options = { to: { width: 200, height: 60 } };
+                    }
+
+                    // run the effect
+                    $("#effect").toggle(selectedEffect, options, 500);
+                };
+
+                // set effect from select menu value
+                $("#button").click(function () {
+                    runEffect();
+                });
+                function latlong() {
+                    return new google.maps.LatLng($("#lat").val(), $("#lng").val());
+                }
+                function position() {
+                    map.setCenter(latlong());
+                }
+                $("#lat, #lng").spinner({
+                    step: .001,
+                    change: position,
+                    stop: position
+                });
+
+                var map = new google.maps.Map($("#map")[0], {
+                    zoom: 8,
+                    center: new google.maps.LatLng($("#lat").val(), $("#lng").val()),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+            });
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryui")
+    }
